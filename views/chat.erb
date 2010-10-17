@@ -1,0 +1,107 @@
+		<script type="text/javascript" src="/script/user.js"></script>
+		<script type="text/javascript" src="/script/message.js"></script>
+		<script type="text/javascript" src="/script/commit.js"></script>
+		<script type="text/javascript" src="/script/issue.js"></script>
+		<script type="text/javascript" src="/script/websockets.js"></script>
+		<script type="text/javascript" src="/script/chatui.js"></script>
+		<script type="text/javascript" src="/script/misc.js"></script>
+	</head>
+	<body>
+<div id="header">
+	<a href="/"><img id="logo" src="/images/logo_50.png" /></a>
+	<div id="account">
+		<% if @current_user %>
+			<div class="person">
+				<img src="<%=gravatar_url(@current_user.gravatar,50)%>" />
+				<div id="github">logged in via <a href="http://github.com">GitHub</a></div>
+				<div class="user-name"><%= @current_user.real_name %></div>
+				<div>
+					<a href="http://github.com/<%=@current_user.username%>">profile</a>
+					&middot;
+					<a href="/logout">log out</a>
+				</div>
+			</div>
+		<% else %>
+			<div class="person logged-out">
+				<a href="/login">log in with github</a>
+			</div>
+		<% end %>
+	</div>
+</div>
+<div id="lpane">
+	<div id="users">
+		<h2>Users</h2>
+		<ul id="admins">
+		</ul>
+		<ul id="others">
+		</ul>
+	</div>
+	<div id="chat-wrap">
+		<div id="evil"></div>
+		<div id="inner-header">
+			<h2>
+				<a id="repo-user" href="<%=user_url(@creator)%>"><%=@creator.username%></a>
+				/
+				<a id="repo-repo" href="<%=repo_url(@repo)%>"><%=@repo.name%></a></h2>
+				<a id="fullscreen" href="#fs"><div id="sbox"></div><div id="lbox"></div></a>
+			<% if !@repo.forks.empty? %>
+				<a id="forks" href="#">Forks<div id="arrow"></div><div id="arrow-shadow"></div></a>
+				<div id="forks-pane">
+					<h3>Forks</h3>
+					<ul>
+						<% @repo.forks.sort_by {|f| f.chat.nil?}.each do |f| %>
+							<li><a class="repo-user" href="<%=repo_url(f)%>"><%=repo_abbr(f)%></a>
+								<% if f.chat %>
+									<%=chat_link(f,'go to chat',classes=['repo-chat'])%>
+								<% end %>
+							</li>
+						<% end %>
+					</ul>
+				</div>
+			<% end %>
+
+		</div>
+		<div id="chat">
+			<div id="earliest-chat-id" style="display: none;"><%=@first_message_id%></div>
+			<div id="display">
+				<div id="original-message" class="message">
+					<div class="author">GitChat</div>
+					<pre><p>Welcome to GitChat! This is the chat for <%=repo_link(@repo)%>. You can access the chats of any forks that have them by clicking on the "forks" button. You can hide the feeds on the right by clicking on the fullscreen button next to it. New commits and issues will display on the left as they are created.</p></pre>
+				</div>
+				<% prev = nil %>
+				<% @messages.each do |msg| %>
+					<div id="msg<%=msg.id%>" class="message <%= 'follow' if prev == msg.author.username %>">
+						<div class="author"><%=msg.author.chat_name%></div>
+						<div class="timestamp"><%=msg.created_at.to_i%></div>
+						<pre><p><%=msg.text%></p></pre>
+					</div>
+					<% prev = msg.author.username %>
+				<% end %>
+			</div>
+		</div>
+		<div id="send">
+			<% if @current_user %>
+				<form>
+					<input type="hidden" value="<%=@session_key%>" />
+					<textarea></textarea>
+				</form>
+			<% else %>
+				<a id="not-logged-in" href="/login">Log in with your GitHub account</a>
+			<% end %>
+		</div>
+	</div>
+</div>
+<div id="rpane">
+	<div id="rpane-scroll">
+		<div id="commits">
+			<h2>Recent Commits</h2>
+			<div id="commits-feed">
+			</div>
+		</div>
+		<div id="issues">
+			<h2>Recent Issues</h2>
+			<div id="issues-feed">
+			</div>
+		</div>
+	</div>
+</div>

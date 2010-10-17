@@ -1,0 +1,43 @@
+<% unless @current_user %>
+<link rel="stylesheet" href="/style/index.css" type="text/css" media="screen" />
+</head>
+<body>
+	<div id="outside">
+<% end %>
+
+		<div id="browser-support"><p>GitChat only supports browsers with WebSockets, like Safari and Chrome.<a href="#">x</a></p></div>
+<div id="page-main" class="nochat">
+	<% if !@current_user %>
+		<h1><img src="/images/logo2_100.png" /></h1>
+		<p id="tagline">Project chat for your GitHub repositories.</p>
+		<a id="login-huge" href="<%= @oauth_link %>">Log in with GitHub</a>
+		<a id="gitchat-chat" href="/samdk/gitchat">Chat about GitChat</a>
+	<% end %>
+	<% if @error_alert %>
+		<div id="error-alert"><%=@error_alert%></div>
+	<% end %>
+	<% if @current_user && !@current_user.repositories.empty? %>
+		<div id="your-repos-li">
+			<h2>Your Repositories</h2>
+			<ul id="current-repos">
+				<% @current_user.repositories.each do |repo| %>
+					<li>
+					<div class="a"><a href="<%= repo_url(repo) %>"><%= repo_abbr(repo) %></a>
+						<%= '<img src="/images/lock.png" />' if repo.private %></div>
+					<div class="b">
+						<% if repo.private %>
+							<em>coming soon</em>
+						<% else %>
+							<% if repo.chat %>
+								<%=chat_link(repo,'Join chat')%>
+							<% else %>
+								<%=create_chat_link(repo,'Create chat')%>
+							<% end %>
+						<% end %>
+					</div>
+					</li>
+				<% end %>
+			</ul>
+		</div>
+	<% end %>
+</div>

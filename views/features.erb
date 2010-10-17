@@ -1,0 +1,22 @@
+<div id="features" class="nochat">
+	<% if @popular && !@popular.empty? && @newest && !@newest.empty? %>
+		<div id="popular-repos">
+			<h3>Popular Repositories</h3>
+			<ul>
+				<% @popular.each do |c| %>
+					<li><%= chat_link(c.repository, repo_abbr(c.repository)) %></li>
+				<% end %>
+			</ul>
+		</div>
+		<div id="newest-repos">
+			<h3>New Repositories</h3>
+			<ul>
+				<% @newest.each do |c| %>
+					<li><%= chat_link(c.repository, repo_abbr(c.repository)) %></li>
+				<% end %>
+			</ul>
+		</div>
+    <div style="clear: both;"></div>
+	<% end %>
+</div>
+

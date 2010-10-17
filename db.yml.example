@@ -1,0 +1,5 @@
+adapter:  mysql
+database: railsrumble
+username: root
+password:
+host:     localhost

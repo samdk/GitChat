@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title><%= @title ? @title : 'GitChat - Chat for GitHub'%></title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<link rel="stylesheet" href="/style/style.css" type="text/css" media="screen" />
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
+		<script type="text/javascript" src="/script/modernizr-1.5.min.js"></script>
+		
+		
+			<%= erb(:header, :layout => false) unless @no_header %>
+			<%= yield %>
+			<%= erb(:features, :layout => false) unless @no_features %>
+		<% unless @is_chat %></div><% end %>
+		<%= erb(:footer, :layout => false) unless @no_footer %>
+		<div id="username-hidden" style="display: none;"><%= @current_user.username if @current_user %></div>
+		
+		<script type="text/javascript">
+		if(!Modernizr.websockets) {
+			$('#browser-support').css({'display':'block'});
+			$('#outside').css({'top':'94px'});
+			$('#browser-support a').click(function() {
+				//$('#browser-support').css({'display':'none'});
+				$('#browser-support').slideUp('fast')
+				$('#outside').css({'top':'50px'});
+			});
+		}  
+		</script>
+	</body>
+</html>
+

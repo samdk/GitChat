@@ -1,0 +1,9 @@
+.rvmrc
+db.yml
+tests/github_auth.yml
+*~
+*.swp
+*.swo
+.bundle
+*.pid
+log/*.log

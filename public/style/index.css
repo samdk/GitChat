@@ -1,0 +1,170 @@
+#outside {
+	width: 560px;
+	background: white;
+	padding: 30px 20px 20px;
+	-webkit-box-shadow: 0 0 5px black;
+	-moz-box-shadow: 0 0 5px black;
+	margin: 50px auto 0;
+	position: relative;
+}
+
+	h1 {
+		font-size: 64px;
+		text-align: center;
+		font-weight: bold;
+	}
+	#page-main #tagline {
+		text-align: center;
+		margin-top: -6px;
+		font-size: 21px;
+	}
+	#login-huge {
+		display: block;
+		margin: 25px auto -5px;
+		text-align: center;
+		text-shadow: 0 -1px 0 #324C73;
+		width: 210px;
+		padding: 15px;
+		color: white;
+		font-size: 21px;
+		background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #587BBD), color-stop(0.5, #4478DB), color-stop(1,#2f62ab));
+		background: -moz-linear-gradient(
+		    center top,
+		    rgb(88,123,189) 0%,
+		    rgb(68,121,219) 50%,
+		    rgb(47,99,171) 100%
+		);
+		-webkit-border-radius: 50px;
+		-moz-border-radius: 50px;
+		border: 1px solid #324C73;
+	}
+		#login-huge:hover {
+			text-decoration: none;
+			border-width: 5px;
+			margin: 21px auto -9px;
+		}
+		#login-huge:active {
+			background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #2f62ab), color-stop(0.5, #4478DB), color-stop(1,#587BBD));
+			background: -moz-linear-gradient(
+			    center top,
+			    #2f62ab 0%,
+			    #4478DB 50%,
+			    #587BBD 100%
+			);
+		}
+	#gitchat-chat {
+		clear: both;
+		text-align: center;
+		display: block;
+		width: 300px;
+		margin: 10px auto -10px;
+		text-decoration: underline;
+		color: #B42222;
+	}
+		#gitchat-chat:hover { text-decoration: none; }
+	#features {
+		margin: 18px auto;
+		width: 350px;
+		padding-top: 20px;
+		font-size: 15px;
+	}
+		#features h3 {
+			color: #555;
+			font-weight: bold;
+			text-shadow: 0 1px 1px white;
+			margin-bottom: 6px;
+		}
+			#features ul li {
+				margin-bottom: 3px;
+			}
+		#popular-repos {
+			float: left;
+      width: 160px;
+      overflow: show;
+		}
+		#newest-repos {
+			float: right;
+      width: 160px;
+      overflow: show;
+		}
+#footer {
+	bottom: 10px;
+	width: 300px;
+	text-align: center;
+	margin: 20px auto;
+	height: 120px;
+}
+	#footer h2 {
+		font-weight: bold;
+		font-size: 15px;
+		color: #555;
+		margin: 3px 0;
+		text-shadow: 0 1px 1px white;
+	}
+	#footer #team-pictures {
+		width: 203px;
+		margin: 0 auto;
+		height: 50px;
+		-webkit-box-shadow: 0 0 3px black;
+		-moz-box-shadow: 0 0 3px black;
+	}
+		#team-pictures img {
+			margin: 0;
+			border-left: 1px solid #888;
+			display: block;
+			float: left;
+		}
+		#team-pictures a:first-child img{ border-width: 0; }
+	#footer h2#rr {
+
+	}
+	#footer p {
+		font-size: 11px;
+		color: #666;
+	}
+#your-repos-li {
+	
+}
+	#your-repos-li h2 {
+		margin: 10px 0;
+		font-weight: bold;
+		font-size: 18px;
+		color: #555;
+		text-align: center;
+	}
+	#your-repos-li ul {
+		width: 350px;
+		margin: 0 auto;
+		overflow: auto;
+	}
+		#your-repos-li li {
+			clear: both;
+			padding: 4px 0;
+			border-bottom: 1px dotted #ddd;
+			margin-bottom: 4px;
+			overflow: auto;
+		}
+			#your-repos-li li:last-child {
+				border-bottom: 0;
+			}
+			#your-repos-li .a {
+				float: left;
+			}
+				#your-repos-li .a img {
+					height: 12px;
+					opacity: 0.5;
+				}
+			#your-repos-li .b {
+				float: right;
+			}
+	em {
+		color: #aaa;
+	}
+#error-alert {
+	background: black
+	color: white;
+	font-size: 16px;
+	width: 400px;
+	padding: 8px;
+}
+

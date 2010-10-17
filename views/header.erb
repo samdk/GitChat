@@ -1,0 +1,29 @@
+	<link rel="stylesheet" href="/style/index.css" type="text/css" media="screen" />
+</head>
+<body>
+	<% if @current_user %><div id="outside"><% end %>
+	<div id="header" class="nochat">
+		<div id="header-wrapper">
+			<img id="logo" src="/images/logo_50.png" />
+			<div id="account">
+				<% if @current_user %>
+					<div class="person">
+						<img src="<%=gravatar_url(@current_user.gravatar,50)%>" />
+						<div id="github">logged in via <a href="http://github.com">GitHub</a></div>
+						<div class="user-name"><%= @current_user.real_name %></div>
+						<div>
+							<a href="http://github.com/<%=@current_user.username%>">profile</a>
+							&middot;
+							<a href="/logout">log out</a>
+						</div>
+					</div>
+				<% else %>
+					<a id="login-header" href="/login">Log In With GitHub</a>
+				<% end %>
+			</div>
+		</div>
+	</div>
+	<% if @message %>
+		<div id="alert-message"><%=@message%><a class="close-button" href="#"></a></div>
+	<% end %>
+

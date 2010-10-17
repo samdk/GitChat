@@ -1,0 +1,17 @@
+#!/bin/bash
+DIR=$HOME/rr10-team-220
+REPO_URL=git@github.com:railsrumble/rr10-team-220.git
+source /etc/profile
+rvm 1.9.2
+if [ ! -d "$DIR" ]; then
+	cd $HOME
+	git clone $REPO_URL
+else 
+	cd $DIR
+	git pull
+fi
+
+#if [ $? -ne "-1" ]; then 
+/etc/init.d/thin restart
+ruby $DIR/socketrunner.rb restart
+#fi
