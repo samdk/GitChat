@@ -11,7 +11,7 @@ require 'evma_httpserver'
 IDLE_TIME = 15      # seconds to wait before setting user idle
 LEAVE_TIME = 30     # seconds to wait before showing user gone
 PRUNE_TIME = 120    # seconds to wait before pruning a connection from @old_connections
-SEND_USER_LIST = 30 # seconds to wait before sending user list to everyone again
+SEND_USER_LIST = 30000 # seconds to wait before sending user list to everyone again
 
 config = YAML.load(File.open("#{File.dirname(__FILE__)}/db.yml"))
 ActiveRecord::Base.establish_connection(config)
@@ -50,8 +50,8 @@ AMQP.start(:host => "localhost") do
   
   EventMachine::WebSocket.start(:host => "0.0.0.0", :port => 8000) do |ws|
     #Prune old connections
-    EM.add_periodic_timer(5) do
-      
+    EM.add_periodic_timer(5000) do
+      puts "TIMER"
       @old_connections.delete_if do |uuid, old_conn|
         begin
           case old_conn[:state]
@@ -71,6 +71,7 @@ AMQP.start(:host => "localhost") do
             if Time.now - old_conn[:time] > PRUNE_TIME
               old_conn[:state] = :gone
               old_conn[:conn][:repo].chat.remove_user old_conn[:conn][:user]
+              old_conn[:conn][:conn][:queues].each{|queue| queue.unsubscribe}
             end
             true
           end

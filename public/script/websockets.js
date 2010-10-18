@@ -74,14 +74,15 @@ var EventDispatcher = function(url)
     return this;
   };
 
-  this.refresh = function()
+  /*this.refresh = function()
   {
+      return;
       setInterval(function() {
         connection = null;
         connection = new WebSocket(_url);
         reconnect_pause = 2*reconnect_pause;
       }, reconnect_pause * 1000);
-  }
+  }*/
   
   this.reset_timeout = function()
   {
