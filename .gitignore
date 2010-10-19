@@ -1,5 +1,6 @@
 .rvmrc
 db.yml
+github_config.yml
 tests/github_auth.yml
 *~
 *.swp

@@ -34,12 +34,13 @@ set :public, File.dirname(__FILE__) + '/public'
 
 module RR
   class App < Sinatra::Application
-    CLIENT_SERVER_ID = ""
-    CLIENT_SERVER_SECRET = ""
-    CLIENT_LOCAL_ID=""
-    CLIENT_LOCAL_SECRET=""
-    AUTH_URL= "https://github.com/login/oauth/authorize"
-    ACCESS_TOKEN_PATH = "https://github.com/login/oauth/access_token"
+    github_config = YAML.load(File.open("github_config.yml"))
+    CLIENT_SERVER_ID     = github_config["client_server_id"]
+    CLIENT_SERVER_SECRET = github_config["client_server_secret"]
+    CLIENT_LOCAL_ID      = github_config["client_local_id"]
+    CLIENT_LOCAL_SECRET  = github_config["client_local_secret"]
+    AUTH_URL             = "https://github.com/login/oauth/authorize"
+    ACCESS_TOKEN_PATH    = "https://github.com/login/oauth/access_token"
     
     before do
       #AMQP.connect(:host => "localhost")
@@ -192,7 +193,7 @@ module RR
       OAuth2::Client.new(client_id, client_secret,
                          :site => "https://github.com/login/oauth",
                          :authorize_path => AUTH_URL,
-                         :access_token_path => ACCESS_TOKEN_PATH,\
+                         :access_token_path => ACCESS_TOKEN_PATH
                         ).web_server
 
     end
