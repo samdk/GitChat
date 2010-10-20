@@ -11,7 +11,7 @@ require 'evma_httpserver'
 IDLE_TIME = 15      # seconds to wait before setting user idle
 LEAVE_TIME = 30     # seconds to wait before showing user gone
 PRUNE_TIME = 120    # seconds to wait before pruning a connection from @old_connections
-SEND_USER_LIST = 30000 # seconds to wait before sending user list to everyone again
+SEND_USER_LIST = 30 # seconds to wait before sending user list to everyone again
 
 module GitChat
   class ChatServer
@@ -54,8 +54,7 @@ module GitChat
   
         EventMachine::WebSocket.start(:host => "0.0.0.0", :port => 8000) do |ws|
           #Prune old connections
-          EM.add_periodic_timer(5000) do
-            puts "TIMER"
+          EM.add_periodic_timer(5) do
             @old_connections.delete_if do |uuid, old_conn|
               begin
                 case old_conn[:state]
