@@ -1,4 +1,3 @@
-#!/usr/local/rvm/rubies/ruby-1.9.2-p0/bin/ruby
 require 'rubygems'
 require 'em-websocket'
 require 'pp'

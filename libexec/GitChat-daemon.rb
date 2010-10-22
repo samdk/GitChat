@@ -1,8 +1,5 @@
-# Change this file to be a wrapper around your daemon code.
+require_relative '../lib/gitchat.rb'
 
-# Do your post daemonization configuration here
-# At minimum you need just the first line (without the block), or a lot
-# of strange things might start happening...
 DaemonKit::Application.running! do |config|
   # Trap signals with blocks or procs
   # config.trap( 'INT' ) do
@@ -11,7 +8,6 @@ DaemonKit::Application.running! do |config|
   # config.trap( 'TERM', Proc.new { puts 'Going down' } )
 end
 
-# Sample loop to show process
 DaemonKit.logger.info "GitChat server running..."
 server = GitChat::ChatServer.new
 server.run
