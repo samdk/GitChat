@@ -1,3 +1,4 @@
+require_relative '../lib/gitchat.rb'
 # Change this file to be a wrapper around your daemon code.
 
 # Do your post daemonization configuration here
@@ -13,5 +14,4 @@ end
 
 # Sample loop to show process
 DaemonKit.logger.info "GitChat server running..."
-server = GitChat::ChatServer.new
-server.run
+GitChat::ChatServer.new.run

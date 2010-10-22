@@ -49,7 +49,7 @@
 				<div id="forks-pane">
 					<h3>Forks</h3>
 					<ul>
-						<% @repo.forks.sort_by {|f| f.chat.nil?}.each do |f| %>
+						<% @repo.forks.sort_by {|f| f.chat.nil? ? 0 : 1}.each do |f| %>
 							<li><a class="repo-user" href="<%=repo_url(f)%>"><%=repo_abbr(f)%></a>
 								<% if f.chat %>
 									<%=chat_link(f,'go to chat',classes=['repo-chat'])%>
