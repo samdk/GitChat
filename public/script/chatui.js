@@ -295,7 +295,7 @@ function get_gravatar(username,callback){
 	if (username in gravatars_map){
 		callback(gravatars_map[username]);
 	}else {
-		$.ajax({url:"http://github.com/api/v2/json/user/show/"+username,
+		$.ajax({url:"https://github.com/api/v2/json/user/show/"+username,
 		dataType:'jsonp',
 		success: function(data){
 			var gravatar = data["user"]["gravatar_id"];
@@ -309,7 +309,7 @@ function retrieve_issues()
 {
   var current_repo = $('#repo-user').text() +"/"+ $('#repo-repo').text();
   var issues_web_url = "http://github.com/"+current_repo+"/issues#issue/";
-  var issues_url = "http://github.com/api/v2/json/issues/list/" + current_repo;
+  var issues_url = "https://github.com/api/v2/json/issues/list/" + current_repo;
 		$.ajax({url: issues_url+"/open",
 		          dataType:"jsonp",
 		          success: function(data) {
@@ -396,7 +396,7 @@ function retrieve_commits()
 {
   var current_repo = $('#repo-user').text() +"/"+ $('#repo-repo').text();
   
-  $.ajax({url: "http://github.com/api/v2/json/commits/list/" + current_repo + "/master",
+  $.ajax({url: "https://github.com/api/v2/json/commits/list/" + current_repo + "/master",
           dataType:"jsonp",
           success: function(data) {display_commits(data); }});
 }
