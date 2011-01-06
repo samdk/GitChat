@@ -29,8 +29,6 @@ class User < ActiveRecord::Base
     #if the repo isn't in the db, add it
     repos.each do |repo|
       forks = repo[:forks]+[repo]
-      repositories = []
-      parent = nil
       fork_list = nil
       if repo_rec = Repository.find_by_link(repo[:link])
         fork_list = repo_rec.fork_list
@@ -42,14 +40,14 @@ class User < ActiveRecord::Base
         unless repository
           repository = Repository.create_from_hash(fork, self.username, token)
         end
-        repositories << repository
-        parent = repository if fork[:parent_repo] == "#{fork[:creator]}/#{fork[:name]}"
+
+        fork_list.parent = repository if fork[:parent_repo] == "#{fork[:creator]}/#{fork[:name]}"
         repository.fork_list = fork_list
         if repo[:link] == repository.link && !self.repositories.include?(repository)
           self.repositories << repository
         end
+        repository.save!
       end
-      fork_list.parent = parent
       fork_list.save!
     end
   end

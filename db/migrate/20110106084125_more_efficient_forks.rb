@@ -5,7 +5,7 @@ class MoreEfficientForks < ActiveRecord::Migration
       t.integer :parent_id
     end
 
-    add_column :repositories, :fork_id, :integer
+    add_column :repositories, :fork_list_id, :integer
   end
 
   def self.down
