@@ -66,6 +66,23 @@ module RR
       erb :index 
     end
 
+    get '/login_as/:user' do
+      # lets you log in as any user. Useful for testing
+      if (http_host.split(":")[0] == "localhost")
+        user_hash = { 
+          :profile_link => "https://github.com/#{params[:user]}",
+          :username     => params[:user],
+          :seen_before  => false
+        }
+        user = User.create_from_hash(user_hash, params[:user], nil)
+        sess = UserSession.create(:access_token => "12345",
+                                  :user => user,
+                                  :last_seen => Time.now)
+        session[:session_key] = sess.session_key
+      end
+      redirect '/'
+    end
+
     get '/login' do
       session[:back] = back
       redirect oauth.authorize_url(:redirect_uri => oauth_redirect_url, :scope => "user,repo")
@@ -83,7 +100,7 @@ module RR
       
       user_json = JSON.parse(access_token.get("/api/v2/json/user/show"))['user']
       user_hash = {
-        :profile_link => "http://github.com/#{user_json['login']}",
+        :profile_link => "https://github.com/#{user_json['login']}",
         :gravatar     => user_json['gravatar_id'],
         :username     => user_json['login'],
         :real_name    => user_json['name'],

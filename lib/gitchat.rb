@@ -50,44 +50,44 @@ module GitChat
         @mq = MQ.new
   
         EM.start_server '0.0.0.0', 8001, UpServer
-  
-        EventMachine::WebSocket.start(:host => "0.0.0.0", :port => 8000) do |ws|
-          #Prune old connections
-          EM.add_periodic_timer(5) do
-            @old_connections.delete_if do |uuid, old_conn|
-              begin
-                case old_conn[:state]
-                when :added
-                  if Time.now - old_conn[:time] > IDLE_TIME
-                    old_conn[:state] = :set_idle
-                    old_conn[:conn][:repo].chat.set_idle old_conn[:conn][:user]
-                  end
-                  false
-                when :set_idle
-                  if Time.now - old_conn[:time] > LEAVE_TIME
-                    old_conn[:state] = :set_gone
-                    old_conn[:conn][:repo].chat.remove_user old_conn[:conn][:user]
-                  end
-                  false
-                when :set_gone
-                  if Time.now - old_conn[:time] > PRUNE_TIME
-                    old_conn[:state] = :gone
-                    old_conn[:conn][:repo].chat.remove_user old_conn[:conn][:user]
-                    old_conn[:conn][:conn][:queues].each{|queue| queue.unsubscribe}
-                  end
-                  true
+
+        #Prune old connections
+        EM.add_periodic_timer(5) do
+          @old_connections.delete_if do |uuid, old_conn|
+            begin
+              case old_conn[:state]
+              when :added
+                if Time.now - old_conn[:time] > IDLE_TIME
+                  old_conn[:state] = :set_idle
+                  old_conn[:conn][:repo].chat.set_idle old_conn[:conn][:user]
                 end
-              rescue
+                false
+              when :set_idle
+                if Time.now - old_conn[:time] > LEAVE_TIME
+                  old_conn[:state] = :set_gone
+                  old_conn[:conn][:repo].chat.remove_user old_conn[:conn][:user]
+                end
+                false
+              when :set_gone
+                if Time.now - old_conn[:time] > PRUNE_TIME
+                  old_conn[:state] = :gone
+                  old_conn[:conn][:repo].chat.remove_user old_conn[:conn][:user]
+                  old_conn[:conn][:conn][:queues].each{|queue| queue.unsubscribe}
+                end
                 true
               end
+            rescue
+              true
             end
           end
-    
-          #Resend the current users periodically
-          EM.add_periodic_timer(SEND_USER_LIST) do
-            Chat.send_user_lists
-          end
-    
+        end
+        
+        #Resend the current users periodically
+        EM.add_periodic_timer(SEND_USER_LIST) do
+          Chat.send_user_lists
+        end
+        
+        EventMachine::WebSocket.start(:host => "0.0.0.0", :port => 8000) do |ws|
           ws.onopen do
             DaemonKit.logger.debug "Connection opened on #{ws.signature}"
           end
