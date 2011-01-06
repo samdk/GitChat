@@ -7,10 +7,9 @@ class Repository < ActiveRecord::Base
   
   belongs_to :creator, :class_name => "User"
   has_one :chat
-  has_and_belongs_to_many :forks,
-    :class_name => "Repository",
-    :foreign_key => "this_repository_id",
-    :association_foreign_key => "other_repository_id"
+
+  belongs_to :fork_list
+
   has_many :issues
   belongs_to :parent_repo, :class_name => "Repository"
   
@@ -109,6 +108,14 @@ class Repository < ActiveRecord::Base
 
   def self.find_by_name_pair(username,reponame)
     Repository.find(:username => username, :reponame => reponame)
+  end
+
+  def forks
+    self.fork_list ? self.fork_list.repositories - [self] : []
+  end
+
+  def parent
+    self.fork_list ? self.fork_list.parent : nil
   end
   
   private

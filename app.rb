@@ -22,6 +22,7 @@ require './models/chat'
 require './models/commit'
 require './models/issue'
 require './models/message'
+require './models/fork_list'
 require './models/repository'
 require './models/user'
 require './models/user_session'
@@ -89,7 +90,8 @@ module RR
         :seen_before  => false
       }
       user = User.create_from_hash(user_hash, user_hash[:username], token)
-      sess = UserSession.create(:access_token => token,
+      puts "Finished creating user"
+		  sess = UserSession.create(:access_token => token,
                                 :user => user,
                                 :last_seen => Time.now)
 
