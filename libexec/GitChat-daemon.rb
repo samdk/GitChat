@@ -9,5 +9,4 @@ DaemonKit::Application.running! do |config|
 end
 
 DaemonKit.logger.info "GitChat server running..."
-server = GitChat::ChatServer.new
-server.run
+GitChat::ChatServer.new.run

@@ -1,4 +1,4 @@
-#Request these values from GitHub at http://github.com/account/applications/new
+#Request these values from GitHub at https://github.com/account/applications/new
 client_server_id: 
 client_server_secret: 
 client_local_id: 

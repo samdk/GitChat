@@ -5,21 +5,21 @@ module Github
   class Base
     def self.api_url(point, token)
       #auth = token ? "#{username}%2Ftoken:#{token}@" : ""
-      "http://github.com/api/v2/yaml#{point}?access_token=#{token}"
+      "https://github.com/api/v2/yaml#{point}?access_token=#{token}"
     end
   end
   class User
     def self.find(username)
       puts "Finding user: #{username}"
       #yaml = RestClient.get Github.api_uri("/user/show/#{username}", username, nil)
-      yaml = RestClient.get "http://github.com/api/v2/yaml/user/show/#{username}"
+      yaml = RestClient.get "https://github.com/api/v2/yaml/user/show/#{username}"
       user = YAML.load(yaml)["user"]
       
       {
         :username => user["login"],
         :real_name => user["name"],
         :gravatar => user["gravatar_id"],
-        :profile_link => "http://github.com/#{user["login"]}/"
+        :profile_link => "https://github.com/#{user["login"]}/"
       }
     end
   end

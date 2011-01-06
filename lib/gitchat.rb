@@ -159,7 +159,7 @@ module GitChat
                   :users => conn[:repo].chat.users.collect{|user| user.to_hash}
                 }
               }.to_json)
-            rescue e
+            rescue => e
               send_error("Failed to connect to backend", $!, ws)
               DaemonKit.logger.exception e
             end
