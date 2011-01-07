@@ -256,20 +256,20 @@ module RR
         "#{repo.creator.username}/#{repo.name}"
       end
 
-      def chat_link(repo,text=nil,id=nil,classes=nil)
+      def chat_link(repo,text=nil,classes=nil)
         abbr = repo_abbr(repo)
-        link("/#{abbr}",text.nil? ? abbr : text,id,classes)
+        link("/#{abbr}",text.nil? ? abbr : text,classes)
       end
 
-      def create_chat_link(repo,text=nil,id=nil,classes=nil)
+      def create_chat_link(repo,text=nil,classes=nil)
         abbr = repo_abbr(repo)
-        link("/#{abbr}/create",text.nil? ? abbr : text,id,classes)
+        link("/#{abbr}/create",text.nil? ? abbr : text,classes)
       end
 
-      def link(link,text,id=nil,classes=nil)
+      def link(link,text,classes=nil)
         l = []
         l << "<a href=\"#{link}\""
-        l << " id=\"#{id}\"" if id
+        #l << " id=\"#{id}\"" if id
         l << " class=\"#{classes.join(' ')}\"" if classes && !classes.empty?
         l << ">#{text}</a>"
         l.join('')

@@ -290,9 +290,9 @@ function display_old_messages() {
 };
 
 function get_gravatar(username,callback){
-	if (username== "") 
+	if (username === "")
 		callback("default-image");
-	if (username in gravatars_map){
+	else if (username in gravatars_map){
 		callback(gravatars_map[username]);
 	}else {
 		$.ajax({url:"https://github.com/api/v2/json/user/show/"+username,
