@@ -71,8 +71,10 @@ $(document).ready(function() {
   }
   
                                            
-  // Prepares the page a bit;
-  setInterval(function(){scroll_to_bottom()},0);
+  // scrolls to the bottom of the chat display window
+  // for whatever reason, a setTimeout 0 works, just calling it doesn't...
+  // (setTimeout 0 is probably not actually 0, but you can't tell in the UI)
+  setTimeout(function(){scroll_to_bottom()},0);
   
   retrieve_commits();
   retrieve_issues();
