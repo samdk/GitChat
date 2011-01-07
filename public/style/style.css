@@ -162,7 +162,6 @@ body {
 					#users li a {
 						display: block;
 						padding: 5px;
-						margin: -5px;
 						-webkit-border-radius: 5px;
 						-moz-border-radius: 5px;
 					}

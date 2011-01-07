@@ -6,8 +6,8 @@ var gravatars_map = new Object();
 var top_message_id = 0;
 var oldest_message_id = 0;
 
-function fromISO(date) 
-{
+// date formatting
+function fromISO(date) {
   date = date.replace(/\D/g, " ");
   var dtcomps = date.split(" ");
   
@@ -22,8 +22,8 @@ $(document).ready(function() {
     top_message_id = $('div.message').not('#original-message').first().get()[0].id.substr(3);
   }
   
-  function isFullScreen() { }
-
+  // handles switching back and forth between fullscreen
+  // and not fullscreen modes
   if (window.location.hash === '#fs' ) {
     $('#lpane').addClass('fullscreen');
     $('#account').addClass('fullscreen');
@@ -54,14 +54,13 @@ $(document).ready(function() {
   server.bind('new issue', new_issue);
   server.bind('new connection handshake', assign_uuid);
   server.bind('close', reconnect);
-  server.bind('chat users', verify_user_list);
+  //server.bind('chat users', verify_user_list);
   server.bind('user idle',user_idle);
   server.bind('set unidle', user_unidle);
 
 
   // Send a handshake to the socket server identifying the current
   // chat context.
-  
   if($(':input:hidden')[0] === undefined) {
     server.send('new connection handshake', {"creator":$('#repo-user').text(),
                                              "repository":$('#repo-repo').text()});
@@ -73,18 +72,15 @@ $(document).ready(function() {
   
                                            
   // Prepares the page a bit;
-  scroll_to_bottom();
-  
-  //$('#scroll-button').hide();
-  //$('#scroll-button').click(scroll_click_cb);
+  setInterval(function(){scroll_to_bottom()},0);
   
   retrieve_commits();
   retrieve_issues();
   setInterval("retrieve_issues()", 12000);
   setInterval("retrieve_commits()", 12000);
 
-  
   // Updates number of users in each fork chat
+  /* not working at the moment, and not very important either
   $('#forks').click((function(evt) {
     // Keep the id around in the closure
     // so we can kill the recurring event
@@ -92,19 +88,20 @@ $(document).ready(function() {
     
     return (function() {
       if(!$(this).hasClass('clicked')) {
-        interval_id = setInterval("update_user_counts()", 5000);
+        interval_id = setInterval(function(){update_user_counts()}, 5000);
       } else {
         clearInterval(interval_id);
       }
     });
   }()));
-  
+  */
   
   
   // Submits text
-  $('#send > * > *').keypress(function(evt) {
+  $('#send > form > textarea').keypress(function(evt) {
     if(event.keyCode === 13) {
-      var message = $(this).val(); 
+	  box = $(this);
+      var message = box.val(); 
       var current_time = new Date();
       var user_token  = $(':input:hidden')[0].value;
     
@@ -113,8 +110,8 @@ $(document).ready(function() {
                                   "time":current_time.getTime(),
                                   "issue":{},
                                   "commit":{}});
-      $(this).last().val("");
-      scroll_to_bottom();
+      box.val("");
+	  return false;
      }
   });
   
@@ -188,7 +185,11 @@ function user_unidle(evt)
   }
 }
 
-
+/*
+ * TODO: figure out what this is supposed to be doing.
+ * it *was* just throwing JS errors, which I fixed, and
+ * now it's preventing the user list from displaying
+ * properly, which I don't think is its intended purpose.
 function verify_user_list(evt)
 {
   var users = $.merge($('#admins > li'),$('#others > li'));
@@ -203,15 +204,16 @@ function verify_user_list(evt)
     var remove = true;
     for(var i = 0; i < evt.length; i++) 
     {
-      if(evt[i].username == users[p].children()[2].innerText) {
+      if(users[p] && users[p].children() && evt[i].username == users[p].children()[2].innerText) {
         remove = false;
       }
     }
     if(remove) {
-      users[p].remove();
+      $(users[p]).remove();
     }
   }
 }
+*/
 
 function reconnect()
 {
@@ -499,12 +501,9 @@ function update_user_counts()
 }
 
 // Scrolls the main chat window to the bottom.
-function scroll_to_bottom()
-{
-  $('#display').each(function() {
-    var scrollHeight = Math.max(this.scrollHeight, this.clientHeight);
-    this.scrollTop = scrollHeight - this.clientHeight;
-  });
+function scroll_to_bottom() {
+  //anything larger than this number doesn't work. mine as well always use the max.
+  $('#display').scrollTop(Math.pow(2,30));
 }
 
 // Callback for when a new user joins the chat.
@@ -560,6 +559,7 @@ function new_message(evt)
   } else {
     $(format(message_template, "message", name, evt.text)).appendTo('#display');
   }
+  scroll_to_bottom();
 }
 
 // Callback for a new commit message appearing.
