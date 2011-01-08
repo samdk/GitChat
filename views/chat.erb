@@ -53,7 +53,9 @@
 							<li><a class="repo-user" href="<%=repo_url(f)%>"><%=repo_abbr(f)%></a>
 								<% if f.chat %>
 									<%=chat_link(f,'go to chat',classes=['repo-chat'])%>
-								<% end %>
+								<% elsif @current_user && @current_user.repositories.include?(f) %>
+                                   <%= create_chat_link(f, 'create chat', classes=['repo-chat']) %>
+                                <% end %>
 							</li>
 						<% end %>
 					</ul>
