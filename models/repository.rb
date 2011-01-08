@@ -92,8 +92,30 @@ class Repository < ActiveRecord::Base
       :private => self.private
     }
   end
+
+  # when we create a chat we need to fill out the network for the
+  # repo...or do we? I'm not sure if providing a list of all of the
+  # repos in a network is really necessary/worth an extra call to
+  # GitHub. In any case, to preserve existing functionality I'm
+  # implementing it anyways.
+  def create_network user, token = nil
+    network = Github::Repository.network_for_repo user.username, self.name, token
+    self.fork_list ||= ForkList.new
+    self.save!
+    network.each do |fork|
+      repository = Repository.find_by_link(fork[:link])
+      unless repository
+        repository = Repository.create_from_hash fork
+      end
+
+      fork_list.parent = repository if fork[:parent_repo] == "#{fork[:creator]}/#{fork[:name]}"
+      repository.fork_list = self.fork_list
+      repository.save!
+    end
+    fork_list.save!
+  end
   
-  def self.create_from_hash(hash, username, token)
+  def self.create_from_hash hash
     unless repo = Repository.find_by_link(hash[:link])
       repo = Repository.new(
         :link => hash[:link],

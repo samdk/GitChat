@@ -63,16 +63,18 @@ module RR
       @no_header = true unless @current_user
       @popular = Chat.all.select {|c| !c.repository.private}.sort_by {|c| -c.users.size}[0,3]
       @newest = Chat.order("created_at DESC").all.select {|c| !c.repository.private}[0,3]
-      erb :index 
+      erb :index
     end
 
     get '/login_as/:user' do
-      # lets you log in as any user. Useful for testing
-      if (http_host.split(":")[0] == "localhost")
-        user_hash = { 
+      # lets you log in as any user. Useful for testing, though
+      # potentially a security risk
+      if request.env['HTTP_HOST'].split(":")[0] == "localhost"
+        user_hash = {
           :profile_link => "https://github.com/#{params[:user]}",
           :username     => params[:user],
-          :seen_before  => false
+          :seen_before  => false,
+          :real_name => params[:user] # need this for chat to work
         }
         user = User.create_from_hash(user_hash, params[:user], nil)
         sess = UserSession.create(:access_token => "12345",
@@ -108,7 +110,7 @@ module RR
       }
       user = User.create_from_hash(user_hash, user_hash[:username], token)
       puts "Finished creating user"
-		  sess = UserSession.create(:access_token => token,
+      sess = UserSession.create(:access_token => token,
                                 :user => user,
                                 :last_seen => Time.now)
 
@@ -186,6 +188,9 @@ module RR
         redirect "/#{params[:creator]}/#{params[:name]}"
       elsif @repo
         if @current_user.repositories.include? @repo
+          # generate network so we can show forks
+          token = UserSession.find_by_session_key(session[:session_key]).access_token
+          @repo.create_network @current_user, token
           chat = Chat.create(:repository => @repo)
           redirect "/#{@repo.creator.username}/#{@repo.name}"
         else

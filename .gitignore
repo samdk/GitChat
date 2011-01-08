@@ -8,3 +8,4 @@ tests/github_auth.yml
 .bundle
 *.pid
 log/*.log
+/app_flymake.rb

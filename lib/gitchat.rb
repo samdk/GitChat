@@ -141,7 +141,7 @@ module GitChat
                 queues =  [repos_queue, chats_queue, users_queue]
                 conn = {:repo => repository, :user => user, :uuid => uuid, :queues => queues}
                 repository.chat.add_user user if conn[:user]
-                puts "Connecting on #{ws.signature}"
+                DaemonKit.logger.info "Connecting on #{ws.signature}"
               end
               @old_connections.delete_if{|uuid, old_conn| old_conn[:conn][:user] == conn[:user]}
               conn[:queues].each{|queue|

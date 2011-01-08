@@ -28,30 +28,17 @@ class User < ActiveRecord::Base
     repos = Github::Repository.find_by_user(self.username, auth_user, token)
     #if the repo isn't in the db, add it
     repos.each do |repo|
-      forks = repo[:forks]+[repo]
-      fork_list = nil
       if repo_rec = Repository.find_by_link(repo[:link])
-        fork_list = repo_rec.fork_list
+        repo_rec.update_attributes(repo)
       else
-        fork_list = ForkList.new
+        repo_rec = Repository.create_from_hash repo
       end
-      forks.each do |fork|
-        repository = Repository.find_by_link(fork[:link])
-        unless repository
-          repository = Repository.create_from_hash(fork, self.username, token)
-        end
-
-        fork_list.parent = repository if fork[:parent_repo] == "#{fork[:creator]}/#{fork[:name]}"
-        repository.fork_list = fork_list
-        if repo[:link] == repository.link && !self.repositories.include?(repository)
-          self.repositories << repository
-        end
-        repository.save!
-      end
-      fork_list.save!
+      repo_rec.creator = self
+      self.repositories << repo_rec
+      repo_rec.save!
     end
   end
-    
+
   def self.find_or_create(username)
     user = nil
     begin
@@ -59,7 +46,8 @@ class User < ActiveRecord::Base
       if !user
         user = User.new(
           :username => username,
-          :profile_link => "https://github.com/username/")
+          :profile_link => "https://github.com/#{username}/"
+        )
         user.save!
       end
     rescue

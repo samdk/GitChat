@@ -30,26 +30,31 @@ module Github
       yaml = RestClient.get Github::Base.api_url("/repos/show/#{user}", token)
       repos = YAML.load(yaml)["repositories"]
       repos.collect do |repo|
-        begin
-          yaml = RestClient.get Github::Base.api_url("/repos/show/#{repo[:owner]}/#{repo[:name]}/network", token)
-          network = YAML.load(yaml)["network"]
-        rescue
-          puts "failed on /repos/show/#{repo[:owner]}/#{repo[:name]}/network"
-          network = []
-        end
-          #find the parent, which is the only one not a fork
-        parent = network.find{|repo| !repo[:fork]}
-        parent_string = "#{parent[:owner]}/#{parent[:name]}" if parent
-        repo_hash = hash_for_repo(repo, parent_string)
-        repo_hash[:forks] = network.collect{|fork| 
-          hash_for_repo(fork, parent_string)
-        }.reject{|fork| fork[:link] == repo_hash[:link]}
-        repo_hash
+        repo_hash = hash_for_repo repo
       end if repos
+    end
+
+    def self.network_for_repo(owner, name, token=nil)
+      begin
+        yaml = RestClient.get Github::Base.api_url("/repos/show/#{owner}/#{name}/network", token)
+        network = YAML.load(yaml)["network"]
+      rescue
+        puts "failed on /repos/show/#{owner}/#{name}/network"
+        network = []
+      end
+      #find the parent, which is the only one not a fork
+      parent = network.find{|repo| !repo[:fork]}
+      parent_string = "#{parent[:owner]}/#{parent[:name]}" if parent
+
+      link = link_from_data(owner, name)
+      
+      network.collect{|fork| 
+        hash_for_repo(fork, parent_string)
+      }.reject{|fork| fork[:link] == link}
     end
     
     private
-    def self.hash_for_repo(repo, parent=nil)
+    def self.hash_for_repo repo, parent=nil
       {
         :link => repo[:url],
         :name => repo[:name],
@@ -58,6 +63,10 @@ module Github
         :parent_repo => parent,
         :private => repo[:private]
       }
+    end
+
+    def self.link_from_data owner, name
+      "https://github.com/#{owner}/#{name}"
     end
   end
   

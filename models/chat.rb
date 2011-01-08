@@ -2,7 +2,7 @@ class Chat < ActiveRecord::Base
   has_and_belongs_to_many :users
   belongs_to :repository
   has_many :messages
-  
+
   def add_user user
     unless self.users.include? user
       self.users << user 
@@ -30,7 +30,6 @@ class Chat < ActiveRecord::Base
   
   def self.send_user_lists
     self.joins(:users).uniq.each do |chat|
-      puts "Pushing user list on #{chat.repository.repo}"
       MQ.new.topic("gitchat:users").publish(
         {
           :event => "chat users",
@@ -43,7 +42,6 @@ class Chat < ActiveRecord::Base
   
   private
   def push_to_amqp(event, user)
-    puts "Pushing #{event} to AMQP for #{user.username}"
     MQ.new.topic("gitchat:users").publish(
       {
         :event => event,
