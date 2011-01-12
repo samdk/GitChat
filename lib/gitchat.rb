@@ -7,13 +7,14 @@ require 'active_record'
 require 'uuid'
 require 'evma_httpserver'
 
-IDLE_TIME = 15      # seconds to wait before setting user idle
-LEAVE_TIME = 30     # seconds to wait before showing user gone
-PRUNE_TIME = 120    # seconds to wait before pruning a connection from @old_connections
-SEND_USER_LIST = 30 # seconds to wait before sending user list to everyone again
 
 module GitChat
   class ChatServer
+    IDLE_TIME = 15      # seconds to wait before setting user idle
+    LEAVE_TIME = 30     # seconds to wait before showing user gone
+    PRUNE_TIME = 120    # seconds to wait before pruning a connection from @old_connections
+    SEND_USER_LIST = 30 # seconds to wait before sending user list to everyone again
+
     def initialize
       config = YAML.load(File.open("#{File.dirname(__FILE__)}/../db.yml"))
       ActiveRecord::Base.establish_connection(config)
@@ -72,11 +73,14 @@ module GitChat
                 if Time.now - old_conn[:time] > PRUNE_TIME
                   old_conn[:state] = :gone
                   old_conn[:conn][:repo].chat.remove_user old_conn[:conn][:user]
-                  old_conn[:conn][:conn][:queues].each{|queue| queue.unsubscribe}
+                  old_conn[:conn][:queues].each{|queue| queue.delete}
+                  old_conn[:conn][:queues].first
+                  DaemonKit.logger.debug("Deleting conn #{old_conn[:conn][:signature]}")
+                  true
                 end
-                true
               end
             rescue
+              DaemonKit.logger.debug("Deleting but failed to close: #{$!}")
               true
             end
           end
@@ -106,7 +110,7 @@ module GitChat
             begin
               @old_connections[conn[:uuid]] = {:conn => conn, :time => Time.now, :state => :added}
             rescue
-              DaemonKit.logger.debug "Failed to save old connection for #{ws.signature}"
+              DaemonKit.logger.debug "Failed to save old connection for #{ws.signature}: #{$!}"
             end
           end
     
@@ -129,21 +133,23 @@ module GitChat
                 uuid = UUID.new.generate
         
                 user_session = UserSession.find_by_session_key(message['data']['session_key'])
+                return unless user_session
                 user = user_session.user
         
                 repository = User.find_by_username(
                   message['data']['creator']
                 ).repositories.find_by_name(message['data']['repository'])
-        
+
                 repos_queue = @mq.queue("repos#{@run_uuid}#{ws.signature}").bind(@mq.topic('gitchat:repositories'), :key => repo)        
                 chats_queue = @mq.queue("chats#{@run_uuid}#{ws.signature}").bind(@mq.topic('gitchat:chats'), :key => repo)
                 users_queue = @mq.queue("users#{@run_uuid}#{ws.signature}").bind(@mq.topic('gitchat:users'), :key => repo)
+
                 queues =  [repos_queue, chats_queue, users_queue]
-                conn = {:repo => repository, :user => user, :uuid => uuid, :queues => queues}
+                conn = {:repo => repository, :user => user, :uuid => uuid, :queues => queues, :signature => ws.signature}
                 repository.chat.add_user user if conn[:user]
                 DaemonKit.logger.info "Connecting on #{ws.signature}"
               end
-              @old_connections.delete_if{|uuid, old_conn| old_conn[:conn][:user] == conn[:user]}
+
               conn[:queues].each{|queue|
                 queue.subscribe do |msg|
                   ws.send(msg)
