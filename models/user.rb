@@ -32,9 +32,9 @@ class User < ActiveRecord::Base
         repo_rec.update_attributes(repo)
       else
         repo_rec = Repository.create_from_hash repo
+        self.repositories << repo_rec
       end
       repo_rec.creator = self
-      self.repositories << repo_rec
       repo_rec.save!
     end
   end
