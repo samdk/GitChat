@@ -309,23 +309,31 @@ function get_gravatar(username,callback){
 		}
 }
 
+function auth_string(){
+  var authString = "?app_id=" + APP_ID;
+  if(AUTH_TOKEN != ""){
+    authString += "&access_token=" + encodeURIComponent(AUTH_TOKEN);
+  }
+  return authString;
+}
+
 function retrieve_issues()
 {
   var current_repo = $('#repo-user').text() +"/"+ $('#repo-repo').text();
   var issues_web_url = "http://github.com/"+current_repo+"/issues#issue/";
   var issues_url = "https://github.com/api/v2/json/issues/list/" + current_repo;
-		$.ajax({url: issues_url+"/open",
-		          dataType:"jsonp",
-		          success: function(data) {
-			 		$.ajax({url: issues_url+"/closed",
-							dataType: "jsonp",
-							success: function(data2){
-								v= $.merge(data["issues"],data2["issues"]);
-								v.sort(function(a,b) {return fromISO(b.created_at) - fromISO(a.created_at)} )
-								display_issues(issues_web_url,v);
-							}});
-						}
-					});
+	$.ajax({url: issues_url+"/open" + auth_string(),
+		      dataType:"jsonp",
+		      success: function(data) {
+			 		  $.ajax({url: issues_url+"/closed" + auth_string(),
+							      dataType: "jsonp",
+							      success: function(data2){
+								      v= $.merge(data["issues"],data2["issues"]);
+								      v.sort(function(a,b) {return fromISO(b.created_at) - fromISO(a.created_at)} )
+								      display_issues(issues_web_url,v);
+							      }});
+					}
+				 });
 }
 
 
