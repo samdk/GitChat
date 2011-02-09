@@ -52,6 +52,18 @@ module Github
         hash_for_repo(fork, parent_string)
       }.reject{|fork| fork[:link] == link}
     end
+
+    def self.collaborators_for_repo owner, name, token=nil
+      begin
+        url = "/repos/show/#{owner}/#{name}/collaborators"
+        yaml = RestClient.get Github::Base.api_url(url, token)
+        collabs = YAML.load(yaml)["network"]
+      rescue
+        puts "Failed to get collaborators for #{owner}/#{name}"
+        collabs = []
+      end
+      collabsa
+    end
     
     private
     def self.hash_for_repo repo, parent=nil
