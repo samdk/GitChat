@@ -134,8 +134,12 @@ module RR
       @repo = @creator.repositories.find_by_name(params[:name]) if @creator
       if @repo && @repo.chat
         if !@repo.private || (@current_user && @repo.private && @current_user.repositories.include?(@repo))
-          @session_key = session[:session_key] if @current_user
+          if @current_user
+            @session_key = session[:session_key]
+            @auth_token = UserSession.find_by_session_key(@session_key).access_token
+          end
           @is_chat = true
+          @app_id = client_info[0]
           
           m = Message.order("created_at ASC").find_all_by_chat_id(@repo.chat.id)
           msgs = m.last(50)
@@ -146,7 +150,7 @@ module RR
 
           erb :chat
         else
-          403
+          redirect '/'
         end
       else
         404
@@ -160,7 +164,6 @@ module RR
       @repo = @creator.repositories.find_by_name(params[:name]) if @creator
       if @repo && @repo.chat
         if !@repo.private || (@current_user && @repo.private && @current_user.repositories.include?(@repo))
-          @session_key = session[:session_key] if @current_user
           
           msgs = Message.order("created_at ASC").where(['chat_id = ? AND created_at < ?', @repo.chat.id, Time.at(params[:before].to_i)]).last(50)
           msgs2 = msgs.collect do |msg|
@@ -201,19 +204,21 @@ module RR
       end
     end
 
+    def client_info
+      http_host = request.env['HTTP_HOST']
+      if (http_host.split(":")[0] == "localhost")
+        # For testing. Probably should do this by separating
+        # into production and development
+        [CLIENT_LOCAL_ID, CLIENT_LOCAL_SECRET]
+      else 
+        [CLIENT_SERVER_ID, CLIENT_SERVER_SECRET]
+      end      
+    end
+
     def oauth
       #puts YAML::dump(request)
-      http_host = request.env['HTTP_HOST']
       #puts request.url.split(":")[0] 
-      if (http_host.split(":")[0] == "localhost")
-        # For testing. Probably should do this by separating into production and development
-        client_id=CLIENT_LOCAL_ID
-        client_secret = CLIENT_LOCAL_SECRET
-      else 
-        client_id=CLIENT_SERVER_ID
-        client_secret = CLIENT_SERVER_SECRET
-      end
-
+      client_id, client_secret = client_info
       OAuth2::Client.new(client_id, client_secret,
                          :site => "https://github.com/login/oauth",
                          :authorize_path => AUTH_URL,

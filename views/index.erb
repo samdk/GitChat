@@ -25,14 +25,10 @@
 					<div class="a"><a href="<%= repo_url(repo) %>"><%= repo_abbr(repo) %></a>
 						<%= '<img src="/images/lock.png" />' if repo.private %></div>
 					<div class="b">
-						<% if repo.private %>
-							<em>coming soon</em>
+  					<% if repo.chat %>
+							<%=chat_link(repo,'Join chat')%>
 						<% else %>
-							<% if repo.chat %>
-								<%=chat_link(repo,'Join chat')%>
-							<% else %>
-								<%=create_chat_link(repo,'Create chat')%>
-							<% end %>
+							<%=create_chat_link(repo,'Create chat')%>
 						<% end %>
 					</div>
 					</li>
